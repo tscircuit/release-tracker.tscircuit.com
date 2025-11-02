@@ -104,3 +104,5 @@ interface MergeFeatureEvent {
   feature_name: FeatureName
 }
 ```
+
+Events are POST'd using the `/release_events/create` route
