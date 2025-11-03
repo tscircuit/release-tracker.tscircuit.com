@@ -29,8 +29,8 @@ export interface ReleaseTrackerState {
 	repoGraph: Record<
 		RepoName,
 		{
-			/** The upstream repo that this repo depends on */
-			upstream_edge: RepoName;
+			/** The upstream repo that this repo depends on (null if no upstream) */
+			upstream_edge: RepoName | null;
 			/** List of downstream repos that depend on this repo */
 			downstream_edges: RepoName[];
 		}

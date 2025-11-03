@@ -5,7 +5,7 @@ type ReleaseTrackerState = {
 	repoGraph: Record<
 		string,
 		{
-			upstream_edge: string;
+			upstream_edge: string | null;
 			downstream_edges: string[];
 		}
 	>;
