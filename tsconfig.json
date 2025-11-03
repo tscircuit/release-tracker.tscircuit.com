@@ -16,6 +16,8 @@
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
+    "types": ["bun-types"],
+    "typeRoots": ["./types", "./node_modules/@types", "./node_modules"],
 
     // Additional safety
     "forceConsistentCasingInFileNames": true,
@@ -25,8 +27,8 @@
     "noUnusedLocals": true,
     // "noUnusedParameters": true,
 
-     // Libs & paths
+    // Libs & paths
     "lib": ["ESNext", "DOM"],
-    "baseUrl": ".",
+    "baseUrl": "."
   }
 }
