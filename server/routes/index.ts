@@ -19,9 +19,10 @@ type ReleaseTrackerState = {
 	>;
 };
 
-export default eventHandler(async () => {
+export default eventHandler(async (event) => {
 	// Get state directly from the state module
-	const state: ReleaseTrackerState = getState();
+	const env = event.context.cloudflare?.env;
+	const state: ReleaseTrackerState = await getState(env);
 
 	// Group repo states by repo name to display latest version per repo
 	const reposByRepo: Record<

@@ -3,14 +3,19 @@
   "private": true,
   "scripts": {
     "start": "bun run dev",
-    "build": "nitro build",
+    "build": "nitro build && node scripts/fix-static-manifest.js",
     "dev": "nitro dev",
     "preview": "node .output/server/index.mjs",
+    "deploy": "npm run build && wrangler deploy",
+    "deploy:preview": "npm run build && wrangler deploy --env preview",
     "test": "bun test",
     "test:watch": "bun test --watch"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240122.0",
+    "glob": "^11.0.3",
     "h3": "^1.15.4",
-    "nitropack": "^2.12.4"
+    "nitropack": "^2.12.4",
+    "wrangler": "^3.0.0"
   }
 }
