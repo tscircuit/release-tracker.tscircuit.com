@@ -2,6 +2,7 @@
   "name": "nitro-app",
   "private": true,
   "scripts": {
+    "start": "bun run dev",
     "build": "nitro build",
     "dev": "nitro dev",
     "preview": "node .output/server/index.mjs",
