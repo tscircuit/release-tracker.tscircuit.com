@@ -1,8 +1,5 @@
 node_modules
-dist
-.data
-.nitro
-.cache
 .output
-.env
-.env.local
+.data
+bun.lockb
+bun.lock
