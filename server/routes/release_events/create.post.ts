@@ -60,11 +60,20 @@ async function handleFeatureMerged(
 			repoState.queued_features.push(feature_name);
 		}
 	} else {
-		// No version exists yet, create a placeholder state
-		// This will be properly initialized when a version is created
-		console.warn(
-			`Feature merged for ${repo} but no version exists yet. Feature will be tracked when version is created.`,
-		);
+		// No version exists yet - we need to track this feature
+		// We'll create a temporary state entry that will be properly initialized
+		// when the first version is created. Use a placeholder key.
+		const placeholderKey = `${repo}@__pending__`;
+		if (!repoStates[placeholderKey]) {
+			repoStates[placeholderKey] = {
+				merged_features: [],
+				queued_features: [],
+				upstream_features: [],
+			};
+		}
+		if (!repoStates[placeholderKey].queued_features.includes(feature_name)) {
+			repoStates[placeholderKey].queued_features.push(feature_name);
+		}
 	}
 }
 
@@ -85,7 +94,9 @@ async function handleVersionsUpdated(
 		upstream_features: string[];
 	};
 	const repoStates = currentState.repoStates as Record<string, RepoState>;
-	if (!repoStates[stateKey]) {
+	const isNewVersion = !repoStates[stateKey];
+
+	if (isNewVersion) {
 		repoStates[stateKey] = {
 			merged_features: [],
 			queued_features: [],
@@ -118,14 +129,30 @@ async function handleVersionsUpdated(
 			const previousKey = previousVersions[0].key;
 			const previousState = repoStates[previousKey];
 			if (previousState) {
-				// Move queued features to merged features
+				// Move queued features from previous version to merged features of new version
 				repoStates[stateKey].merged_features = [
 					...previousState.merged_features,
 					...previousState.queued_features,
 				];
 			}
 		}
+
+		// Check for pending features (features merged before any version existed)
+		const pendingKey = `${repo}@__pending__`;
+		const pendingState = repoStates[pendingKey];
+		if (pendingState && pendingState.queued_features.length > 0) {
+			// Move pending features to merged features of this new version
+			repoStates[stateKey].merged_features = [
+				...repoStates[stateKey].merged_features,
+				...pendingState.queued_features,
+			];
+			// Remove the pending placeholder
+			delete repoStates[pendingKey];
+		}
 	}
+
+	// If version already exists and has queued features, they should stay queued
+	// (they'll be moved to merged when the next version is created)
 
 	// Get upstream repos from package.json dependencies
 	const upstreamRepos: string[] = [];

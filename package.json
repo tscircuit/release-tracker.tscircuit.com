@@ -9,7 +9,9 @@
     "deploy": "npm run build && wrangler deploy",
     "deploy:preview": "npm run build && wrangler deploy --env preview",
     "test": "bun test",
-    "test:watch": "bun test --watch"
+    "test:watch": "bun test --watch",
+    "test:prod": "bun run scripts/test-prod.ts",
+    "clear:prod": "bun run scripts/clear-prod-state.ts"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20240122.0",
