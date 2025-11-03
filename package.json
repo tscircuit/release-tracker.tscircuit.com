@@ -4,10 +4,15 @@
   "scripts": {
     "build": "nitro build",
     "dev": "nitro dev",
-    "preview": "node .output/server/index.mjs"
+    "preview": "node .output/server/index.mjs",
+    "format": "prettier --write ."
   },
   "devDependencies": {
+    "@types/node": "^20.16.5",
+    "bun-types": "^1.1.20",
     "h3": "^1.15.4",
-    "nitropack": "^2.12.4"
+    "nitropack": "^2.12.4",
+    "prettier": "^3.3.3",
+    "unstorage": "^1.11.2"
   }
 }
