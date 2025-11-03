@@ -9,8 +9,6 @@
 
 import { test, expect, beforeAll, afterAll } from "bun:test";
 import { setupTestServer } from "./setup";
-import type { ReleasePipelineEvent, ReleaseTrackerState } from "../lib/types";
-import { ROUTES } from "../lib/routes";
 
 let testServer: Awaited<ReturnType<typeof setupTestServer>> | null = null;
 
@@ -25,24 +23,22 @@ afterAll(async () => {
 });
 
 test("should track a feature from merge to downstream propagation", async () => {
+	if (!testServer) throw new Error("Test server not initialized");
+
 	// Step 1: Merge feature to core
-	const mergeEvent: ReleasePipelineEvent = {
+	const mergeEvent = {
 		event_type: "feature_merged",
 		repo: "tscircuit/core",
 		feature_name: "Introduce Ground Pours",
 	};
 
-	if (!testServer) throw new Error("Test server not initialized");
-	const mergeResponse = await fetch(
-		`${testServer.url}${ROUTES.CREATE_RELEASE_EVENT.path}`,
-		{
-			method: ROUTES.CREATE_RELEASE_EVENT.method,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ event: mergeEvent }),
+	const mergeResponse = await fetch(`${testServer.url}/release_events/create`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
+		body: JSON.stringify({ event: mergeEvent }),
+	});
 
 	if (mergeResponse.status === 404) {
 		console.log("Route not implemented yet - skipping test");
@@ -52,7 +48,7 @@ test("should track a feature from merge to downstream propagation", async () => 
 	expect(mergeResponse.status).toBe(200);
 
 	// Step 2: Update version in core
-	const versionEvent: ReleasePipelineEvent = {
+	const versionEvent = {
 		event_type: "versions_updated",
 		repo: "tscircuit/core",
 		version: "0.1.2",
@@ -64,9 +60,9 @@ test("should track a feature from merge to downstream propagation", async () => 
 	};
 
 	const versionResponse = await fetch(
-		`${testServer.url}${ROUTES.CREATE_RELEASE_EVENT.path}`,
+		`${testServer.url}/release_events/create`,
 		{
-			method: ROUTES.CREATE_RELEASE_EVENT.method,
+			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -77,7 +73,7 @@ test("should track a feature from merge to downstream propagation", async () => 
 	expect(versionResponse.status).toBe(200);
 
 	// Step 3: Update version in eval (downstream)
-	const evalVersionEvent: ReleasePipelineEvent = {
+	const evalVersionEvent = {
 		event_type: "versions_updated",
 		repo: "tscircuit/eval",
 		version: "5.7.2",
@@ -91,9 +87,9 @@ test("should track a feature from merge to downstream propagation", async () => 
 	};
 
 	const evalVersionResponse = await fetch(
-		`${testServer.url}${ROUTES.CREATE_RELEASE_EVENT.path}`,
+		`${testServer.url}/release_events/create`,
 		{
-			method: ROUTES.CREATE_RELEASE_EVENT.method,
+			method: "POST",
 			headers: {
 				"Content-Type": "application/json",
 			},
@@ -104,12 +100,10 @@ test("should track a feature from merge to downstream propagation", async () => 
 	expect(evalVersionResponse.status).toBe(200);
 
 	// Step 4: Verify state reflects the feature propagation
-	const stateResponse = await fetch(
-		`${testServer.url}${ROUTES.GET_STATE.path}`,
-	);
+	const stateResponse = await fetch(`${testServer.url}/state`);
 	expect(stateResponse.status).toBe(200);
 
-	const state: ReleaseTrackerState = await stateResponse.json();
+	const state = await stateResponse.json();
 
 	// Verify core has the merged feature
 	const coreState = state.repoStates["tscircuit/core@0.1.2"];

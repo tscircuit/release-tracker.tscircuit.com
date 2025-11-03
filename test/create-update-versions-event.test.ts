@@ -6,11 +6,6 @@
 
 import { test, expect, beforeAll, afterAll } from "bun:test";
 import { setupTestServer } from "./setup";
-import type {
-	ReleasePipelineEvent,
-	CreateReleaseEventResponse,
-} from "../lib/types";
-import { ROUTES } from "../lib/routes";
 
 let testServer: Awaited<ReturnType<typeof setupTestServer>> | null = null;
 
@@ -27,7 +22,7 @@ afterAll(async () => {
 test("should create an UpdateVersionsEvent", async () => {
 	if (!testServer) throw new Error("Test server not initialized");
 
-	const event: ReleasePipelineEvent = {
+	const event = {
 		event_type: "versions_updated",
 		repo: "tscircuit/eval",
 		version: "5.7.2",
@@ -40,16 +35,13 @@ test("should create an UpdateVersionsEvent", async () => {
 		},
 	};
 
-	const response = await fetch(
-		`${testServer.url}${ROUTES.CREATE_RELEASE_EVENT.path}`,
-		{
-			method: ROUTES.CREATE_RELEASE_EVENT.method,
-			headers: {
-				"Content-Type": "application/json",
-			},
-			body: JSON.stringify({ event }),
+	const response = await fetch(`${testServer.url}/release_events/create`, {
+		method: "POST",
+		headers: {
+			"Content-Type": "application/json",
 		},
-	);
+		body: JSON.stringify({ event }),
+	});
 
 	if (response.status === 404) {
 		console.log("Route not implemented yet - skipping test");
@@ -57,6 +49,6 @@ test("should create an UpdateVersionsEvent", async () => {
 	}
 
 	expect(response.status).toBe(200);
-	const data: CreateReleaseEventResponse = await response.json();
+	const data = await response.json();
 	expect(data.success).toBe(true);
 });

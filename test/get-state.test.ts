@@ -6,8 +6,6 @@
 
 import { test, expect, beforeAll, afterAll } from "bun:test";
 import { setupTestServer } from "./setup";
-import type { ReleaseTrackerState } from "../lib/types";
-import { ROUTES } from "../lib/routes";
 
 let testServer: Awaited<ReturnType<typeof setupTestServer>> | null = null;
 
@@ -24,7 +22,7 @@ afterAll(async () => {
 test("should return the current release tracker state", async () => {
 	if (!testServer) throw new Error("Test server not initialized");
 
-	const response = await fetch(`${testServer.url}${ROUTES.GET_STATE.path}`);
+	const response = await fetch(`${testServer.url}/state`);
 
 	if (response.status === 404) {
 		console.log("Route not implemented yet - skipping test");
@@ -32,7 +30,7 @@ test("should return the current release tracker state", async () => {
 	}
 
 	expect(response.status).toBe(200);
-	const state: ReleaseTrackerState = await response.json();
+	const state = await response.json();
 
 	// Validate structure
 	expect(state).toHaveProperty("repoGraph");
@@ -42,19 +40,21 @@ test("should return the current release tracker state", async () => {
 
 	// Validate repo graph structure
 	for (const graph of Object.values(state.repoGraph)) {
-		expect(graph).toHaveProperty("upstream_edge");
-		expect(graph).toHaveProperty("downstream_edges");
-		expect(Array.isArray(graph.downstream_edges)).toBe(true);
+		const g = graph as Record<string, unknown>;
+		expect(g).toHaveProperty("upstream_edge");
+		expect(g).toHaveProperty("downstream_edges");
+		expect(Array.isArray(g.downstream_edges)).toBe(true);
 	}
 
 	// Validate repo states structure
 	for (const [key, stateEntry] of Object.entries(state.repoStates)) {
+		const entry = stateEntry as Record<string, unknown>;
 		expect(key).toMatch(/^.+@.+/); // Should match RepoName@SemverVersion format
-		expect(stateEntry).toHaveProperty("merged_features");
-		expect(stateEntry).toHaveProperty("queued_features");
-		expect(stateEntry).toHaveProperty("upstream_features");
-		expect(Array.isArray(stateEntry.merged_features)).toBe(true);
-		expect(Array.isArray(stateEntry.queued_features)).toBe(true);
-		expect(Array.isArray(stateEntry.upstream_features)).toBe(true);
+		expect(entry).toHaveProperty("merged_features");
+		expect(entry).toHaveProperty("queued_features");
+		expect(entry).toHaveProperty("upstream_features");
+		expect(Array.isArray(entry.merged_features)).toBe(true);
+		expect(Array.isArray(entry.queued_features)).toBe(true);
+		expect(Array.isArray(entry.upstream_features)).toBe(true);
 	}
 });
