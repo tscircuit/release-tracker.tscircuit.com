@@ -1,5 +1,9 @@
+# release-tracker.tscircuit.com
+
 This is a Nitro project for tracking the status of feature/fix releases in the
 tscircuit release pipeline.
+
+[View the release tracker](https://release-tracker.tscircuit.com)
 
 tscircuit repos get PRs merged against main, these PRs then move downstream
 through @tscircuitbot PRs that are automatically merged and increment
