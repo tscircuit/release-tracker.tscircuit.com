@@ -111,7 +111,7 @@ Events are POST'd using the `/release_events/create` route
 
 ### Base URL
 
-Production: `https://release-tracker3.seve.workers.dev`
+Production: `https://release-tracker.tscircuit.com`
 
 ### Endpoints
 
@@ -245,7 +245,7 @@ jobs:
       - name: Send feature merge event
         run: |
           FEATURE_NAME="${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }}"
-          curl -X POST https://release-tracker3.seve.workers.dev/release_events/create \
+          curl -X POST https://release-tracker.tscircuit.com/release_events/create \
             -H "Content-Type: application/json" \
             -d "{
               \"event\": {
@@ -295,7 +295,7 @@ jobs:
 
       - name: Send version update event
         run: |
-          curl -X POST https://release-tracker3.seve.workers.dev/release_events/create \
+          curl -X POST https://release-tracker.tscircuit.com/release_events/create \
             -H "Content-Type: application/json" \
             -d "{
               \"event\": {
@@ -322,7 +322,7 @@ You can also create a script in your repository that can be called from your wor
 
 EVENT_TYPE=$1
 REPO=$2
-TRACKER_URL="https://release-tracker3.seve.workers.dev/release_events/create"
+TRACKER_URL="https://release-tracker.tscircuit.com/release_events/create"
 
 if [ "$EVENT_TYPE" = "feature_merged" ]; then
   FEATURE_NAME=$3
@@ -434,7 +434,7 @@ jobs:
         continue-on-error: true
         run: |
           FEATURE_NAME="${{ github.event.pull_request.user.login }}: ${{ github.event.pull_request.title }} #${{ github.event.pull_request.number }}"
-          curl -X POST https://release-tracker3.seve.workers.dev/release_events/create \
+          curl -X POST https://release-tracker.tscircuit.com/release_events/create \
             -H "Content-Type: application/json" \
             -d "{
               \"event\": {
@@ -450,7 +450,7 @@ jobs:
         run: |
           VERSION=$(node -p "require('./package.json').version")
           PACKAGE_JSON=$(cat package.json)
-          curl -X POST https://release-tracker3.seve.workers.dev/release_events/create \
+          curl -X POST https://release-tracker.tscircuit.com/release_events/create \
             -H "Content-Type: application/json" \
             -d "{
               \"event\": {
