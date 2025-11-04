@@ -19,12 +19,35 @@ export type FeatureName = string;
 export type SemverVersion = string;
 
 /**
+ * Represents the state stored in Durable Objects (only repoStates, not repoGraph)
+ */
+export interface StoredState {
+	/**
+	 * State of each repo at each version
+	 * Key format: `${RepoName}@${SemverVersion}`
+	 */
+	repoStates: Record<
+		`${RepoName}@${SemverVersion}`,
+		{
+			/** Features that have been merged and released in this version */
+			merged_features: FeatureName[];
+			/** Features queued to be merged in the next release */
+			queued_features: FeatureName[];
+			/** Features from upstream repos that haven't been merged yet */
+			upstream_features: FeatureName[];
+		}
+	>;
+}
+
+/**
  * Represents the complete state of the release tracker system
+ * repoGraph is loaded from lib/repoGraph.ts and merged with stored state
  */
 export interface ReleaseTrackerState {
 	/**
 	 * Graph structure representing relationships between repos
 	 * Maps repo name to its upstream and downstream relationships
+	 * This is loaded from lib/repoGraph.ts, not stored in Durable Objects
 	 */
 	repoGraph: Record<
 		RepoName,

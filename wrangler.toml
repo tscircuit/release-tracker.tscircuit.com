@@ -1,0 +1,7 @@
+name = "release-tracker3"
+main = ".output/server/index.mjs"
+compatibility_date = "2024-09-19"
+
+[assets]
+directory = ".output/public"
+

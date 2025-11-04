@@ -1,6 +1,7 @@
 {
   // https://nitro.build/guide/typescript
   // "extends": "./.nitro/types/tsconfig.json",
+  "include": ["**/*.ts", "**/*.tsx", "server/types.d.ts"],
   "compilerOptions": {
     // Module resolution
     "target": "ESNext",
@@ -28,5 +29,6 @@
      // Libs & paths
     "lib": ["ESNext", "DOM"],
     "baseUrl": ".",
+    "types": ["@cloudflare/workers-types"],
   }
 }
