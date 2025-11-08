@@ -53,17 +53,27 @@ if (!indexContent.includes("export { StateStorage }")) {
     .replace(/\{ status }/g, '{ status: 405 }') // Fix status object
     .replace(/export class/g, 'class'); // Remove export temporarily
 
-  // Append the StateStorage class and export it
-  indexContent = indexContent.replace(
-    /const __STATIC_CONTENT_MANIFEST = \{\};/,
-    `const __STATIC_CONTENT_MANIFEST = {};
+  const durableObjectCode = `
 
 // Durable Object: StateStorage
 ${jsSource}
 
 // Export Durable Objects for Cloudflare Workers
-export { StateStorage };`
-  );
+export { StateStorage };`;
+
+  // Try to inject after __STATIC_CONTENT_MANIFEST (cloudflare-module-legacy)
+  if (indexContent.includes('const __STATIC_CONTENT_MANIFEST = {};')) {
+    indexContent = indexContent.replace(
+      /const __STATIC_CONTENT_MANIFEST = \{\};/,
+      `const __STATIC_CONTENT_MANIFEST = {};${durableObjectCode}`
+    );
+  } else {
+    // For cloudflare-module preset, append to end of file before sourcemap comment
+    indexContent = indexContent.replace(
+      /(\/\/# sourceMappingURL=.*)/,
+      `${durableObjectCode}\n$1`
+    );
+  }
 
   writeFileSync(indexPath, indexContent);
   console.log(`Added StateStorage Durable Object export to: ${indexPath}`);
