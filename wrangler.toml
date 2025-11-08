@@ -2,6 +2,9 @@ name = "release-tracker3"
 main = ".output/server/index.mjs"
 compatibility_date = "2024-09-19"
 
+[build]
+command = "bun install && bun run build"
+
 [assets]
 directory = ".output/public"
 
