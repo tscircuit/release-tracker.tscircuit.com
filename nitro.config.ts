@@ -5,7 +5,7 @@ export default defineNitroConfig({
 	compatibilityDate: "2024-09-19",
 	srcDir: "server",
 	imports: false,
-	preset: "cloudflare_module",
+	preset: "cloudflare-module",
 	cloudflare: {
 		deployConfig: true,
 		nodeCompat: true,

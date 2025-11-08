@@ -1,6 +1,16 @@
 name = "release-tracker3"
+main = ".output/server/index.mjs"
 compatibility_date = "2024-09-19"
 
-[build]
-command = "bun install && bun run build"
+[assets]
+directory = ".output/public"
+
+[[durable_objects.bindings]]
+name = "STATE_STORAGE"
+class_name = "StateStorage"
+script_name = "release-tracker3"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["StateStorage"]
 
