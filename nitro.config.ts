@@ -19,6 +19,13 @@ export default defineNitroConfig({
 					new_classes: ["StateStorage"],
 				},
 			],
+			observability: {
+				logs: {
+					enabled: true,
+					head_sampling_rate: 1,
+					invocation_logs: true,
+				},
+			},
 		},
 	},
 });
