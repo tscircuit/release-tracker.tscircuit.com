@@ -5,6 +5,15 @@ compatibility_date = "2024-09-19"
 [assets]
 directory = ".output/public"
 
+[[durable_objects.bindings]]
+name = "STATE_STORAGE"
+class_name = "StateStorage"
+script_name = "release-tracker3"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["StateStorage"]
+
 [observability]
 [observability.logs]
 enabled = false
